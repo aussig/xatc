@@ -106,18 +106,6 @@ class UIManager:
 		self.messageTextField = XPCreateWidget(self.scrollingMessageFieldRect["x"], self.scrollingMessageFieldRect["y"], self.scrollingMessageFieldRect["x"] + self.scrollingMessageFieldRect["width"], self.scrollingMessageFieldRect["y"] - self.scrollingMessageFieldRect["height"], 1, "wibble wobble woo", 0, self.mainWindow, xpWidgetClass_TextField)
 		XPSetWidgetProperty(self.messageTextField, xpProperty_TextFieldType, xpTextTranslucent)
 
-		# Create a countainer for our main menu pushbuttons.  This allows us to just set one widget callback handler per button set rather than one for each button.
-		#self.mainWindowButtonContainer = XPCreateWidget(self.mainWindowRect["x"], self.mainWindowRect["y"], self.mainWindowRect["x"] + self.mainWindowRect["width"], self.mainWindowRect["y"] - self.mainWindowRect["height"], 1,	"",	0, self.mainWindow, xpWidgetClass_SubWindow)
-		#XPSetWidgetProperty(self.mainWindowButtonContainer, xpProperty_SubWindowType, xpSubWindowStyle_Screen)
-		#self.mainMenuButtonsCB = self.mainMenuButtonsCallback
-		#XPAddWidgetCallback(self.XATC, self.mainWindowButtonContainer, self.mainMenuButtonsCB)
-		
-		# Create a countainer for our frequency menu pushbuttons.  This allows us to just set one widget callback handler per button set rather than one for each button.
-		#self.frequencyWindowButtonContainer = XPCreateWidget(self.frequencyWindowRect["x"], self.frequencyWindowRect["y"], self.frequencyWindowRect["x"] + self.frequencyWindowRect["width"], self.frequencyWindowRect["y"] - self.frequencyWindowRect["height"], 1,	"",	0, self.frequencyWindow, xpWidgetClass_SubWindow)
-		#XPSetWidgetProperty(self.frequencyWindowButtonContainer, xpProperty_SubWindowType, xpSubWindowStyle_Screen)
-		#self.frequencyMenuButtonsCB = self.frequencyMenuButtonsCallback
-		#XPAddWidgetCallback(self.XATC, self.frequencyWindowButtonContainer, self.frequencyMenuButtonsCB)
-
 		# Create an ArrayList of buttons for the menu items
 		tempRect = {"x": self.mainWindowRect["x"] + WINDOW_BORDER, "y": self.mainWindowRect["y"] - TITLEBAR_HEIGHT - LINE_HEIGHT - LINE_SPACING, "width": SCROLLING_AREA_CHARACTER_COUNT * CHAR_WIDTH, "height": LINE_HEIGHT}
 		
@@ -168,7 +156,7 @@ class UIManager:
 
 
 	def mainMenuButtonsCallback(self, message, widget, param1, param2):
-		""" Main menu text fields callback """
+		""" Main menu buttons callback """
 		if (message == xpMsg_PushButtonPressed):
 			self.mainMenuItemChosen(XPGetWidgetProperty(param1, WIDGET_PROPERTY_MENUITEMID, 0))
 			return 1
@@ -177,7 +165,7 @@ class UIManager:
 
 
 	def frequencyMenuButtonsCallback(self, message, widget, param1, param2):
-		""" Frequency menu text fields callback """
+		""" Frequency menu buttons callback """
 		if (message == xpMsg_PushButtonPressed):
 			self.frequencyMenuItemChosen(XPGetWidgetProperty(param1, WIDGET_PROPERTY_MENUITEMID, 0))
 			return 1

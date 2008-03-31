@@ -32,7 +32,7 @@ def getWeatherData(ICAO):
 		
 		# Downloaded METAR has two lines, the first is the datestamp (which we can ignore because the date is also included in the METAR report)
 		# the second line is the METAR report itself
-		return getHumanReadableMetar(Metar.Metar(metarCodeLines[1]))
+		return Metar.Metar(metarCodeLines[1])
 		
 	except urllib2.URLError:
 		print "Error loading Metar for " + ICAO
@@ -41,17 +41,19 @@ def getWeatherData(ICAO):
 	except Metar.ParserError:
 		print "Error parsing Metar for " + ICAO
 		return None
-		
+
+
 def getHumanReadableMetar(metar):
 	result = ""
+	if metar == None: return result
 	
-	if metar.time: result += metar.time.ctime() + ", "
-	if metar.wind_speed: result += "wind " + metar.wind() + ", "
-	if metar.vis: result += "visibility " + metar.visibility() + ", "
-	if metar.weather: result += metar.present_weather() + ", "
-	if metar.sky: result += metar.sky_conditions(", ") + ", "
-	if metar.temp: result += "temperature " + metar.temp.string("C") + ", "
-	if metar.press: result += "pressure " + metar.press.string("mb") + ", "
+	if metar.time: result += metar.time.ctime()
+	if metar.wind_speed: result += ", wind " + metar.wind()
+	if metar.vis: result += ", visibility " + metar.visibility()
+	if metar.weather: result += ", " + metar.present_weather()
+	if metar.sky: result += ", " + metar.sky_conditions(", ")
+	if metar.temp: result += ", temperature " + metar.temp.string("C")
+	if metar.press: result += ", pressure " + metar.press.string("mb")
 	
 	"""
 			if self.dewpt:

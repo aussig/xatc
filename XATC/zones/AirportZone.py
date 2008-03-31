@@ -27,23 +27,29 @@ class AirportZone(Zone.Zone):
 		# The current information identifier (Alpha, Bravo etc.)
 		self.currentATISInfoID = int((random.random() * (CommunicationConstants.ALPHA_ID_MAX - CommunicationConstants.ALPHA_ID_MIN))) + CommunicationConstants.ALPHA_ID_MIN
 		# The current weather data
-		self.currentWeatherData = None
-		# The VFR runway in use
-		self.vfrRunway = "10"
+		self.currentWeatherDataStr = None
+		# The current METAR object
+		self.currentMetar = None
+		# The VFR landing runway
+		self.vfrLandingRunway = "10"
+		# The VFR departing runway
+		self.vfrDepartingRunway = "10"
 		# The IFR landing runway
 		self.ifrLandingRunway = "24L"
 		# The IFR departing runway
 		self.ifrDepartingRunway = "24R"
 		# The location of this AirportZone (for purposes of calculating weather, etc.)
 		self.location = {"latitude": 0, "longitude": 0}
-		# The QNH
-		self.qnh = "qnh_here"
-		# The QFE
-		self.qfe = "qfe_here"
+		# The field elevation in feet
+		self.fieldElevation = 0
+		# The QNH in mb
+		self.qnh = 1013
+		# The QFE in mb
+		self.qfe = self.qnh - self.fieldElevation / 27.7   # This calculation works ok at around 1000ft elevation
 		# The wind direction
-		self.windDirection = "wind_dir_here"
-		# The wind speed
-		self.windSpeed = "wind_speed_here"
+		self.windDirection = 0
+		# The wind speed in knots
+		self.windSpeed = 0
 		# The circuit direction
 		self.circuitDirection = "left"
 		
@@ -65,20 +71,32 @@ class AirportZone(Zone.Zone):
 
 	def work(self):
 		""" This is the main work method for the Airport Zone. Subclasses must implement this method to do their stuff periodically. """
-		# Check whether the information needs incrementing
-		newWeatherData = WeatherServices.getWeatherData(self.id)
+		newMetar = WeatherServices.getMetar(self.id)
+		newWeatherData = WeatherServices.getHumanReadableMetar(newMetar)
 		
-		if (self.currentWeatherData == None or newWeatherData != self.currentWeatherData):
+		# Check whether the information needs incrementing
+		if (self.currentWeatherDataStr == None or newWeatherData != self.currentWeatherDataStr):
 			# Increment the identifier
 			self.currentATISInfoID = self.currentATISInfoID + 1
 			if (self.currentATISInfoID > CommunicationConstants.ALPHA_ID_MAX): self.currentATISInfoID = CommunicationConstants.ALPHA_ID_MIN
 			# Set the weather data
-			self.currentWeatherData = newWeatherData
-
+			self.currentMetar = newMetar
+			self.currentWeatherDataStr = newWeatherData
+			self.processMetar()
 			print self.id + " new Metar loaded: (information " + CommunicationConstants.ALPHANUMERIC_STRING[self.currentATISInfoID] + ")"
-			print self.currentWeatherData
+			print self.currentWeatherDataStr
 
 
+	def processMetar(self):
+		if self.currentMetar == None: return
+		
+		if self.currentMetar.press != None:
+			self.qnh = self.currentMetar.press.value("MB")
+			self.qfe = self.qnh - self.fieldElevation / 27.7
+		if self.currentMetar.wind_dir != None: self.windDirection = self.currentMetar.wind_dir.value()
+		if self.currentMetar.wind_speed != None: self.windSpeed = self.currentMetar.wind_speed.value("KT")
+		
+		
 	def replaceParameters(self, message):
 		""" Replace parameters in a Message object relevant to this zone """
 		# Call superclass method

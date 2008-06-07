@@ -10,7 +10,7 @@ from XATC.zones import AirportZone
 from XATC.atc import TowerATC, ApproachATC, DepartureATC, GroundATC, ClearanceDeliveryATC, ATISATC, ArrivalATISATC, DepartureATISATC
 
 class ControlledAirportZone(AirportZone.AirportZone):
-	""" A zone representing a controlled airport """
+	""" Handles a controlled airport zone """
 	 
 	def __init__(self, id, name, towerFrequency, approachFreqency, departureFrequency, groundFrequency, clearanceDeliveryFrequency, arrivalAtisFrequency, departureAtisFrequency, XATC):
 		""" Constructor """

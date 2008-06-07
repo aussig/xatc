@@ -1,5 +1,5 @@
 #
-#  ControlledAirportZone.py
+#  UncontrolledAirportZone.py
 #  XATC
 #
 #  Created by Austin Goudge on 06/03/2008.

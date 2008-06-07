@@ -13,7 +13,7 @@ from XATC.communication import CommunicationConstants
 CALLSIGN_SUFFIX = "ATIS"
 
 class ATISATC(ATC.ATC):
-	""" Handles an approach ATC """
+	""" Handles an ATIS ATC """
 
 	def __init__(self, zone, name, frequencyStr, XATC):
 		""" Constructor """

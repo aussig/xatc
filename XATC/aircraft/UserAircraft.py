@@ -1,5 +1,5 @@
 #
-#  Aircraft.py
+#  UserAircraft.py
 #  XATC
 #
 #  Created by Austin Goudge on 06/03/2008.

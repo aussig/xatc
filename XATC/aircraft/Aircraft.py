@@ -15,7 +15,8 @@ STATES = {"NOT_MOVED" : 0, "TAXYING": 1, "STOPPED": 2, "AIRBORNE": 3}
 FLIGHTLOOP_CALLBACK_FREQUENCY = 1
 
 class Aircraft:
-
+	""" Superclass for all aircraft types """
+	
 	def __init__(self, callsign, XATC):
 		""" Constructor """
 		# Parent plugin

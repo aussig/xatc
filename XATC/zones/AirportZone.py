@@ -18,6 +18,7 @@ from XATC.services import WeatherServices
 FLIGHTLOOP_CALLBACK_FREQUENCY = 3600
 
 class AirportZone(Zone.Zone):
+	""" Manages an airport zone """
 
 	def __init__(self, id, name, XATC):
 		""" Constructor """

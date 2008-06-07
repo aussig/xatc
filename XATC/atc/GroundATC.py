@@ -1,5 +1,5 @@
 #
-#  TowerATC.py
+#  GroundATC.py
 #  XATC
 #
 #  Created by Austin Goudge on 06/03/2008.

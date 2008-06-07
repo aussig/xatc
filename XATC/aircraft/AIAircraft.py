@@ -9,6 +9,8 @@
 from XPLMProcessing import *
 
 class AIAircraft(Aircraft.Aircraft):
+	""" Manages an AI aircraft.  This is likely to be the very last area to be developed, as the main priority is handling
+	    of the user aircraft.""" 
 
 	def __init__(self, callsign, XATC):
 		""" Constructor """

@@ -72,7 +72,7 @@ class AirportZone(Zone.Zone):
 
 	def work(self):
 		""" This is the main work method for the Airport Zone. Subclasses must implement this method to do their stuff periodically. """
-		newMetar = WeatherServices.getMetar(self.id)
+		newMetar = WeatherServices.getWeatherData(self.id)
 		newWeatherData = WeatherServices.getHumanReadableMetar(newMetar)
 		
 		# Check whether the information needs incrementing
@@ -104,21 +104,31 @@ class AirportZone(Zone.Zone):
 		Zone.Zone.replaceParameters(self, message)
 		
 		if (message.data != None):
-			# VFR Runway
-			message.data.text = message.data.text.replace(CommunicationConstants.RADIO_MESSAGE_PARAMETERS["VFR_RUNWAY"], self.vfrRunway)
+			# VFR Runway, default to landing
+			message.data.text = message.data.text.replace(CommunicationConstants.RADIO_MESSAGE_PARAMETERS["VFR_RUNWAY"], self.vfrLandingRunway)
+			# VFR Landing Runway
+			message.data.text = message.data.text.replace(CommunicationConstants.RADIO_MESSAGE_PARAMETERS["VFR_LANDING_RUNWAY"], self.vfrLandingRunway)
+			# VFR Departing Runway
+			message.data.text = message.data.text.replace(CommunicationConstants.RADIO_MESSAGE_PARAMETERS["VFR_DEPARTING_RUNWAY"], self.vfrDepartingRunway)
+			# IFR Runway, default to landing
+			message.data.text = message.data.text.replace(CommunicationConstants.RADIO_MESSAGE_PARAMETERS["IFR_RUNWAY"], self.ifrLandingRunway)
+			# IFR Landing Runway
+			message.data.text = message.data.text.replace(CommunicationConstants.RADIO_MESSAGE_PARAMETERS["IFR_LANDING_RUNWAY"], self.ifrLandingRunway)
+			# IFR Departing Runway
+			message.data.text = message.data.text.replace(CommunicationConstants.RADIO_MESSAGE_PARAMETERS["IFR_DEPARTING_RUNWAY"], self.ifrDepartingRunway)
 			# Circuit direction
 			message.data.text = message.data.text.replace(CommunicationConstants.RADIO_MESSAGE_PARAMETERS["CIRCUIT_DIRECTION"], self.circuitDirection)
 			# Airfield QNH
-			message.data.text = message.data.text.replace(CommunicationConstants.RADIO_MESSAGE_PARAMETERS["AIRFIELD_QNH"], self.qnh)
+			message.data.text = message.data.text.replace(CommunicationConstants.RADIO_MESSAGE_PARAMETERS["AIRFIELD_QNH"], str(self.qnh))
 			# Airfield QFE
-			message.data.text = message.data.text.replace(CommunicationConstants.RADIO_MESSAGE_PARAMETERS["AIRFIELD_QFE"], self.qfe)
+			message.data.text = message.data.text.replace(CommunicationConstants.RADIO_MESSAGE_PARAMETERS["AIRFIELD_QFE"], str(self.qfe))
 			# Airfield wind direction
-			message.data.text = message.data.text.replace(CommunicationConstants.RADIO_MESSAGE_PARAMETERS["AIRFIELD_WIND_DIRECTION"], self.windDirection)
+			message.data.text = message.data.text.replace(CommunicationConstants.RADIO_MESSAGE_PARAMETERS["AIRFIELD_WIND_DIRECTION"], str(self.windDirection))
 			# Airfield wind speed
-			message.data.text = message.data.text.replace(CommunicationConstants.RADIO_MESSAGE_PARAMETERS["AIRFIELD_WIND_SPEED"], self.windSpeed)
+			message.data.text = message.data.text.replace(CommunicationConstants.RADIO_MESSAGE_PARAMETERS["AIRFIELD_WIND_SPEED"], str(self.windSpeed))
 			# Airfield wind speed
 			message.data.text = message.data.text.replace(CommunicationConstants.RADIO_MESSAGE_PARAMETERS["AIRFIELD_NAME"], self.name)
 			
 			# Traffic is going to be complicated, I anticipate leaving it until last, and once we've got AI aircraft implemented too.
-			# Traffic may also need to be inserted by the ATC, not the zone, so this may need to be moved to the ATC replaceParameters() method
+			# Traffic may also need to be inserted into the radio message by the ATC, not the zone, so this may need to be moved to the ATC replaceParameters() method
 			message.data.text = message.data.text.replace(CommunicationConstants.RADIO_MESSAGE_PARAMETERS["AIRFIELD_TRAFFIC"], "no known traffic")

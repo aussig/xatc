@@ -52,7 +52,7 @@ MS_PER_SCROLL_TICK = 80.0
 # Pixels per millisecond for smooth scrolling
 PIXELS_PER_MS = CHAR_WIDTH / MS_PER_SCROLL_TICK
 
-# FlightLoop callback frequency (1/100 second)
+# FlightLoop callback frequency (seconds)
 FLIGHTLOOP_CALLBACK_FREQUENCY = 0.01
 
 
@@ -84,12 +84,18 @@ class UIManager:
 		self.currentPixelScrollPos = CHAR_WIDTH
 
 		# The main window Rectangle
-		self.mainWindowRect = {"x": 100, "y": 400, "width": WINDOW_BORDER * 2 + SCROLLING_AREA_CHARACTER_COUNT * CHAR_WIDTH, "height": WINDOW_BORDER + LINE_HEIGHT * 20 + TITLEBAR_HEIGHT}
+		self.mainWindowRect = {"x": 100,
+													 "y": 400,
+													 "width": WINDOW_BORDER * 2 + SCROLLING_AREA_CHARACTER_COUNT * CHAR_WIDTH,
+													 "height": WINDOW_BORDER + LINE_HEIGHT * 20 + TITLEBAR_HEIGHT}
 		# The frequency window Rectangle
 		self.frequencyWindowRect = {"x": 700, "y": 400, "width": WINDOW_BORDER * 2 + 200, "height": WINDOW_BORDER + LINE_HEIGHT * 20 + TITLEBAR_HEIGHT}
 		# The scrolling message buffer Rectangle
-		self.scrollingMessageFieldRect = {"x": self.mainWindowRect["x"] + WINDOW_BORDER, "y": self.mainWindowRect["y"] - TITLEBAR_HEIGHT, "width": SCROLLING_AREA_CHARACTER_COUNT * CHAR_WIDTH, "height": LINE_HEIGHT}
-
+		self.scrollingMessageFieldRect = {"x": self.mainWindowRect["x"] + WINDOW_BORDER,
+																			"y": self.mainWindowRect["y"] - TITLEBAR_HEIGHT,
+																			"width": SCROLLING_AREA_CHARACTER_COUNT * CHAR_WIDTH,
+																			"height": LINE_HEIGHT}
+		
 		# Set up the main window
 		self.mainWindow = XPCreateWidget(self.mainWindowRect["x"], self.mainWindowRect["y"], self.mainWindowRect["x"] + self.mainWindowRect["width"], self.mainWindowRect["y"] - self.mainWindowRect["height"], 1, "XATC", 1,	0, xpWidgetClass_MainWindow)
 		XPSetWidgetProperty(self.mainWindow, xpProperty_MainWindowType, xpMainWindowStyle_Translucent)

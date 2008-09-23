@@ -52,9 +52,6 @@ MS_PER_SCROLL_TICK = 80.0
 # Pixels per millisecond for smooth scrolling
 PIXELS_PER_MS = CHAR_WIDTH / MS_PER_SCROLL_TICK
 
-# FlightLoop callback frequency (seconds)
-FLIGHTLOOP_CALLBACK_FREQUENCY = 0.01
-
 
 class UIManager:
 	""" Handles all interaction with the user """
@@ -72,6 +69,8 @@ class UIManager:
 		self.scrollingMessageBuffer = " " * SCROLLING_AREA_CHARACTER_COUNT
 		# The currently active menu
 		self.currentMenu = []
+		# Has the menu changed since the last draw callback
+		self.menuChanged = 0
 		# The currently selected menu item
 		self.currentMenuItem = 1
 		# The currently active message
@@ -141,9 +140,10 @@ class UIManager:
 		XPShowWidget(self.mainWindow)
 		XPShowWidget(self.frequencyWindow)
 
-		# Register our flight loop callback
-		self.flightLoopCB = self.flightLoopCallback
-		XPLMRegisterFlightLoopCallback(self.XATC, self.flightLoopCB, FLIGHTLOOP_CALLBACK_FREQUENCY, 0)
+		# Register our draw callback.  UIManager MUST use a draw callback NOT a flight loop callback because user interface changes
+		# can be triggered and these must be drawn from a draw callback
+		self.drawCB = self.drawCallback
+		XPLMRegisterDrawCallback(self.XATC, self.drawCB, xplm_Phase_Window, 0, 0)
 		
 
 	def __del__(self):
@@ -155,10 +155,10 @@ class UIManager:
 		XPLMSetDatai(DATAREF_TEXTATC, self.savedTextATCDataRefSetting)
 
 	
-	def flightLoopCallback(self, elapsedMe, elapsedSim, counter, refcon):
-		""" Flight loop callback """
+	def drawCallback(self, inPhase, inIsBefore, refcon):
+		""" Draw callback """
 		self.work()
-		return FLIGHTLOOP_CALLBACK_FREQUENCY
+		return 1
 
 
 	def mainMenuButtonsCallback(self, message, widget, param1, param2):
@@ -181,13 +181,46 @@ class UIManager:
 
 	def work(self):
 		""" Perform regular actions """
+		self.refreshMainWindowRect()
+
+		# Display a new menu if necessary
+		if (self.menuChanged == 1):
+			self.menuChanged = 0
+			
+			# Recalculate window size
+			if (self.currentMenu == None): newHeight = TITLEBAR_HEIGHT + LINE_HEIGHT + LINE_SPACING + WINDOW_BORDER;
+			else: newHeight = TITLEBAR_HEIGHT + LINE_HEIGHT + LINE_SPACING + ((len(self.currentMenu) + 1) * (LINE_HEIGHT + LINE_SPACING))
+			self.mainWindowRect["height"] = newHeight
+			XPSetWidgetGeometry(self.mainWindow, self.mainWindowRect["x"], self.mainWindowRect["y"], self.mainWindowRect["x"] + self.mainWindowRect["width"], self.mainWindowRect["y"] - self.mainWindowRect["height"])
+
+			if (self.XATC.userAircraft.currentATC == None): XPSetWidgetDescriptor(self.mainWindow, Frequency.formatFrequency(self.XATC.userAircraft.currentFrequency) + ": Air to Air")
+			else: XPSetWidgetDescriptor(self.mainWindow, Frequency.formatFrequency(self.XATC.userAircraft.currentFrequency) + ' ' + self.XATC.userAircraft.currentATC.name)
+
+			# Set up and position the menu fields
+			# Create an ArrayList of text fields for the frequencies
+			tempRect = {"x": self.mainWindowRect["x"] + WINDOW_BORDER, "y": self.mainWindowRect["y"] - TITLEBAR_HEIGHT - LINE_HEIGHT * 2 - LINE_SPACING, "width": SCROLLING_AREA_CHARACTER_COUNT * CHAR_WIDTH, "height": LINE_HEIGHT}
+
+			for i in range(0, 18):
+				textField = self.mainMenuButtons[i]
+				XPSetWidgetGeometry(textField, tempRect["x"], tempRect["y"], tempRect["x"] + tempRect["width"], tempRect["y"] - tempRect["height"])
+
+				if (self.currentMenu != None and i < len(self.currentMenu)):
+					XPSetWidgetDescriptor(textField, str(i + 1) + ". " + self.currentMenu[i].menuText)
+					XPShowWidget(textField)
+				else:
+					XPHideWidget(textField)
+
+				tempRect["y"] -= LINE_HEIGHT + LINE_SPACING
+
+			self.updateFrequencyWindow()
+
 		# Speak if necessary
 		if (self.currentSpokenString != None):
 			XPLMSpeakString(self.currentSpokenString)
 			self.currentSpokenString = None
 
+		# Update the coarse scroll position if necessary
 		if (int(time.clock() * 1000) - self.lastScrollTime > MS_PER_SCROLL_TICK):
-			# Move the coarse scroll along one character, reset smooth scroll position
 			self.lastScrollTime = int(time.clock() * 1000)
 			self.scrollingMessageBuffer = self.scrollingMessageBuffer[1:]
 			if (len(self.scrollingMessageBuffer) < SCROLLING_AREA_CHARACTER_COUNT): self.scrollingMessageBuffer += ' '
@@ -208,38 +241,10 @@ class UIManager:
 
 
 	def showMenu(self, menu):
-		""" Display a menu to the user """
+		""" Display a menu to the user.  The actual display of the menu is delayed until the next draw callback, otherwise nasty crashes can occur"""
 		self.currentMenu = menu
 		self.currentMenuItem = 1
-		self.refreshMainWindowRect()
-
-		# Recalculate window size
-		if (self.currentMenu == None): newHeight = TITLEBAR_HEIGHT + LINE_HEIGHT + LINE_SPACING + WINDOW_BORDER;
-		else: newHeight = TITLEBAR_HEIGHT + LINE_HEIGHT + LINE_SPACING + (len(self.currentMenu) * (LINE_HEIGHT + LINE_SPACING)) + WINDOW_BORDER
-		self.mainWindowRect["height"] = newHeight
-		XPSetWidgetGeometry(self.mainWindow, self.mainWindowRect["x"], self.mainWindowRect["y"], self.mainWindowRect["x"] + self.mainWindowRect["width"], self.mainWindowRect["y"] - self.mainWindowRect["height"])
-
-		if (self.XATC.userAircraft.currentATC == None): XPSetWidgetDescriptor(self.mainWindow, Frequency.formatFrequency(self.XATC.userAircraft.currentFrequency) + ": Air to Air")
-		else: XPSetWidgetDescriptor(self.mainWindow, Frequency.formatFrequency(self.XATC.userAircraft.currentFrequency) + ' ' + self.XATC.userAircraft.currentATC.name)
-
-		# Set up and position the menu fields
-		# Create an ArrayList of text fields for the frequencies
-		tempRect = {"x": self.mainWindowRect["x"] + WINDOW_BORDER, "y": self.mainWindowRect["y"] - TITLEBAR_HEIGHT - LINE_HEIGHT * 2 - LINE_SPACING, "width": SCROLLING_AREA_CHARACTER_COUNT * CHAR_WIDTH, "height": LINE_HEIGHT}
-
-		for i in range(0, 18):
-			textField = self.mainMenuButtons[i]
-			XPSetWidgetGeometry(textField, tempRect["x"], tempRect["y"], tempRect["x"] + tempRect["width"], tempRect["y"] - tempRect["height"])
-
-			if (self.currentMenu != None and i < len(self.currentMenu)):
-				XPSetWidgetDescriptor(textField, str(i + 1) + ". " + self.currentMenu[i].menuText)
-				XPShowWidget(textField)
-			else:
-				XPHideWidget(textField)
-
-			tempRect["y"] -= LINE_HEIGHT + LINE_SPACING
-
-
-		self.updateFrequencyWindow()
+		self.menuChanged = 1
 
 
 	def updateFrequencyWindow(self):

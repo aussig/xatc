@@ -35,6 +35,6 @@ class DepartureATISATC(ATISATC.ATISATC):
 	def replaceParameters(self, message):
 		""" Replace parameters in a Message object relevant to this ATC """
 		# Call superclass method
-		ATC.ATC.replaceParameters(self, message)
+		ATISATC.ATISATC.replaceParameters(self, message)
 		# Nothing else to do here yet
 		pass

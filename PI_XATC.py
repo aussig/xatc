@@ -51,7 +51,7 @@ class PythonInterface:
 		#self.zoneManager.loadCenter("EGTT", "London", "12150")
 		#self.zoneManager.loadControlledAirport("EGAA", "Belfast Aldergrove", "11830", None, None, "12175", None, "12820", None)
 		#self.zoneManager.loadControlledAirport("EGBB", "Birmingham", "11830", None, None, "12180", None, "12627", None)
-		#self.zoneManager.loadControlledAirport("EGCC", "Manchester", "11862", None, None, "12185", "12170", "12817", "12197")
+		self.zoneManager.loadControlledAirport("EGCC", "Manchester", "11862", None, None, "12185", "12170", "12817", "12197")
 		#self.zoneManager.loadControlledAirport("EGGD", "Bristol", "13385", None, None, None, None, "12602", None)
 		#self.zoneManager.loadControlledAirport("EGJJ", "Jersey", "11945", None, None, "12190", None, "11220", "12972")
 		#self.zoneManager.loadControlledAirport("EGPF", "Glasgow", "11880", None, None, "12170", None, "12957", None)

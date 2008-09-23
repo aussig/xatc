@@ -29,14 +29,14 @@ class ATISATC(ATC.ATC):
 		# Loop transmission
 		if (not self.transmissionPending()):
 			if (self.zone == None): return
-			currentWeatherData = self.zone.currentWeatherData
-			if (currentWeatherData == None): return
+			currentWeatherDataStr = self.zone.currentWeatherDataStr
+			if (currentWeatherDataStr == None): return
 
 			# Station name and information ID
-			content = self.zone.name + " information " + CommunicationConstants.ALPHANUMERIC_STRING[self.zone.currentATISInfoID] + " "
-			content += currentWeatherData
+			content = self.zone.name + " information " + CommunicationConstants.ALPHANUMERIC_STRING[self.zone.currentATISInfoID] + ", "
+			content += currentWeatherDataStr
 			#content += "Visual runway 2 4 L and ILS runway 2 4 R in use. "
-			content += "Landing and departing runway " + self.zone.currentRunwayID + ". " # "2 4 L and 2 4 R. "
+			content += "Landing and departing runway " + self.zone.ifrLandingRunway + ". " # "2 4 L and 2 4 R. "
 			content += "VFR aircraft say direction of flight. "
 			content += "All aircraft readback hold short instructions. "
 			content += "Advise controller on initial contact you have " + CommunicationConstants.ALPHANUMERIC_STRING[self.zone.currentATISInfoID] + "."

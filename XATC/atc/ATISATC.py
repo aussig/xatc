@@ -39,7 +39,7 @@ class ATISATC(ATC.ATC):
 			content += "Landing and departing runway " + self.zone.ifrLandingRunway + ". " # "2 4 L and 2 4 R. "
 			content += "VFR aircraft say direction of flight. "
 			content += "All aircraft readback hold short instructions. "
-			content += "Advise controller on initial contact you have " + CommunicationConstants.ALPHANUMERIC_STRING[self.zone.currentATISInfoID] + "."
+			content += "Advise controller on initial contact you have " + CommunicationConstants.ALPHANUMERIC_STRING[self.zone.currentATISInfoID] + ". "
 
 			self.queueTransmission(content, [ATC.ACTIONS["BROADCAST"]], None)
 

@@ -47,7 +47,7 @@ def getHumanReadableMetar(metar):
 	result = ""
 	if metar == None: return result
 	
-	if metar.time: result += metar.time.ctime()
+	if metar.time: result += metar.time.strftime("%A %B %d %H:%M")
 	if metar.wind_speed: result += ", wind " + metar.wind()
 	if metar.vis: result += ", visibility " + metar.visibility()
 	if metar.weather: result += ", " + metar.present_weather()
@@ -55,6 +55,7 @@ def getHumanReadableMetar(metar):
 	if metar.temp: result += ", temperature " + metar.temp.string("C")
 	if metar.press: result += ", pressure " + metar.press.string("mb")
 	
+	result += ". "
 	"""
 			if self.dewpt:
 					lines.append("dew point: %s" % self.dewpt.string("C"))

@@ -36,9 +36,9 @@ class AirportZone(Zone.Zone):
 		# The VFR departing runway
 		self.vfrDepartingRunway = "10"
 		# The IFR landing runway
-		self.ifrLandingRunway = "24L"
+		self.ifrLandingRunway = "24 L"
 		# The IFR departing runway
-		self.ifrDepartingRunway = "24R"
+		self.ifrDepartingRunway = "24 R"
 		# The location of this AirportZone (for purposes of calculating weather, etc.)
 		self.location = {"latitude": 0, "longitude": 0}
 		# The field elevation in feet

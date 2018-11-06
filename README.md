@@ -27,4 +27,4 @@ It is written in Python and is therefore dependant on Sandy Barbour's Python plu
 
 ## Checkout / Install
 
-The source package consists of the top-level plugin file (PI_XATC.py) and a folder containing all classes used by the plugin (XATC/). Both these items must be placed inside a folder titled `PythonScripts` in your X-Plane plugins folder. The only way to get the source at the moment is to use an SVN client. Here are instructions for checking out a read-only copy.
+The source package consists of the top-level plugin file (PI_XATC.py) and a folder containing all classes used by the plugin (XATC/). Both these items must be placed inside a folder titled `PythonScripts` in your X-Plane plugins folder.
